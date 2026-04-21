@@ -15,10 +15,9 @@ mod utils;
 
 #[tokio::main]
 async fn main() {
-    // Initialize tracing (replaces println!)
-    // You can control log level by setting RUST_LOG=debug in terminal
+    // FIX: Set filter to "info" globally so NO targets are blocked
     tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env().add_directive("web3_destroyer=info".parse().unwrap()))
+        .with_env_filter(EnvFilter::new("info"))
         .init();
 
     tracing::info!("🛑 WEB3-DESTROYER INITIALIZING...");

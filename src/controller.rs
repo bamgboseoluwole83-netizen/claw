@@ -1,7 +1,7 @@
-use crate::agents::cross_ghost_reentrancy::DivergenceEngine;
 use crate::agents::discovery::DiscoveryAgent;
 use crate::agents::disassembler::disassemble;
 use crate::agents::fetcher::FetcherAgent;
+use crate::agents::forker::ForkerAgent;
 use crate::cache::DestroyerCache;
 use crate::config::load_config;
 use crate::types::DestroyerConfig;
@@ -9,8 +9,8 @@ use alloy::primitives::{Address, U256};
 use alloy::providers::{ProviderBuilder, RootProvider};
 use alloy::transports::http::{Client, Http};
 use eyre::Result;
-use std::collections::HashMap;
 use std::sync::Arc;
+use revm::Database;
 
 type HttpProvider = RootProvider<Http<Client>>;
 
@@ -34,10 +34,11 @@ impl Controller {
     }
 
     pub async fn run(&self) -> Result<()> {
-        tracing::info!("🧠 Controller online. DSS Symmetry Engine armed.");
+        tracing::info!("🧠 Controller online. Forker & DSS armed.");
         
         let discovery = DiscoveryAgent::new(self.provider.clone());
         let fetcher = FetcherAgent::new(self.provider.clone());
+        let forker = ForkerAgent::new(self.provider.clone());
 
         loop {
             tracing::info!("--- [NEW SCAN CYCLE] ---");
@@ -46,39 +47,34 @@ impl Controller {
             
             if let Ok(bytecode) = fetcher.get_bytecode(weth_address).await {
                 let _map = disassemble(&bytecode)?;
-                self.run_dss_simulation();
+                self.test_live_chaos_fork(&forker, weth_address).await;
             }
 
             tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
         }
     }
 
-    fn run_dss_simulation(&self) {
-        tracing::info!("🧬 [DSS] Spawning 3-way Symmetry Shadow Execution...");
-        let balance_slot = U256::from(1);
+    async fn test_live_chaos_fork(&self, forker: &ForkerAgent, target: Address) {
+        let fake_slot = U256::from(42);
+        let fake_price = U256::from(999999);
 
-        let mut honest_state = HashMap::new();
-        honest_state.insert(balance_slot, U256::from(1000));
+        let mut chaos_db = match forker.fork_and_wrap_chaos(target, fake_slot, fake_price).await {
+            Ok(db) => db,
+            Err(e) => {
+                tracing::error!(error = %e, "Failed to fork");
+                return;
+            }
+        };
 
-        let mut chaotic_pos_state = HashMap::new();
-        chaotic_pos_state.insert(balance_slot, U256::from(990)); 
-
-        let mut chaotic_neg_state = HashMap::new();
-        chaotic_neg_state.insert(balance_slot, U256::from(1002)); 
-
-        let report_pos = DivergenceEngine::diff_states(&honest_state, &chaotic_pos_state);
-        let report_neg = DivergenceEngine::diff_states(&honest_state, &chaotic_neg_state);
-
-        let is_sandwichable = DivergenceEngine::check_symmetry(&report_pos, &report_neg);
-
-        if !report_pos.divergent_slots.is_empty() {
-            tracing::warn!(
-                target: "dss",
-                sandwichable = is_sandwichable,
-                "🚨 DIVERGENCE & ASYMMETRY PROVEN! Routing to Email Reporter."
-            );
-        } else {
-            tracing::info!("🟢 [DSS] States match. Contract math is clean.");
+        match chaos_db.storage(target, fake_slot) {
+            Ok(value) => {
+                if value == fake_price {
+                    tracing::warn!(target: "dss", injected_value = %value, "🚨 LIVE FORK HIJACK SUCCESSFUL!");
+                } else {
+                    tracing::error!("Hijack failed.");
+                }
+            }
+            Err(e) => tracing::error!("REVM DB error: {:?}", e),
         }
     }
-}
+} 

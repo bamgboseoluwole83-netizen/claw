@@ -1,6 +1,4 @@
-// This file tells Rust that all our agent files are part of the "agents" module.
-// We declare them as "pub" so the Controller can access them.
-
+// The Module Tree: This tells Rust exactly which agent files exist.
 pub mod discovery;
 pub mod fetcher;
 pub mod disassembler;
@@ -12,3 +10,4 @@ pub mod invariant_precision;
 pub mod poc_simulator;
 pub mod execution_agent;
 pub mod reporter;
+pub mod forker; // THE FIX: Register our new Alloy-REVM bridge
