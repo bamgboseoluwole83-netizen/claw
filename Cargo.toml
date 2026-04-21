@@ -1,0 +1,49 @@
+[package]
+name = "web3-destroyer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# --- Core Execution & Providers ---
+alloy = { version = "0.3", default-features = false, features = [
+    "signers", "signer-local", "providers", "transports", "rpc-types", "network",
+    "reqwest-rustls-tls" 
+] }
+alloy-primitives = { version = "0.8", features = ["serde"] }
+alloy-sol-types = "0.8"
+
+# --- EVM Execution & Tracing ---
+revm = { version = "14.0", features = ["std", "serde"] }
+revm-inspectors = "0.8"
+
+# --- Database & Async ---
+redb = "2.1"
+tokio = { version = "1", features = ["full"] }
+rayon = "1.10"
+arc-swap = "1.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["limit", "timeout"] }
+
+# --- God-tier Async Structured Logging ---
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# --- Fastest cryptographic hash on earth for Cache ---
+blake3 = "1.5"
+
+# --- Email Alerting ---
+lettre = { version = "0.11", features = ["tokio1-native-tls", "builder"] }
+
+# --- Error Handling & Serialization ---
+eyre = "0.6"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# --- The Elite Memory Allocator ---
+mimalloc = { version = "0.1", default-features = false }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
