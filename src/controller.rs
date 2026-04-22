@@ -1,11 +1,13 @@
-use crate::agents::{discovery::DiscoveryAgent, fetcher::FetcherAgent, forker::ForkerAgent, executor::ExecutorAgent};
-use crate::agents::cross_ghost_reentrancy::DivergenceEngine;
+use crate::agents::{discovery::DiscoveryAgent, executor::ExecutorAgent};
+use crate::agents::cross_ghost_reentrancy::{DivergenceEngine, ChaosDatabase};
 use crate::cache::DestroyerCache;
 use crate::config::load_config;
 use crate::types::DestroyerConfig;
-use alloy::primitives::{Address, U256};
+use alloy::primitives::{Address, B256, U256};
 use alloy::providers::{ProviderBuilder, RootProvider};
 use alloy::transports::http::{Client, Http};
+use revm::db::{CacheDB, EmptyDB};
+use revm::primitives::{AccountInfo, Bytecode};
 use eyre::Result;
 use std::sync::Arc;
 
@@ -27,42 +29,34 @@ impl Controller {
 
     pub async fn run(&self) -> Result<()> {
         tracing::info!(">> Controller online. DSS Depth Engine armed.");
-        
         let discovery = DiscoveryAgent::new(self.provider.clone());
-        let fetcher = FetcherAgent::new(self.provider.clone());
-        let forker = ForkerAgent::new(self.provider.clone());
-
+        let fake_caller: Address = "0x000000000000000000000000000000000000dEaD".parse()?;
+        let target: Address = "0x1337133713371337133713371337133713371337".parse()?;
+        
         loop {
             tracing::info!("--- [NEW DEPTH SCAN] ---");
             let _block = discovery.get_latest_block().await?;
-            let weth: Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".parse()?;
-            let fake_caller: Address = "0x000000000000000000000000000000000000dEaD".parse()?;
             
-            if let Ok(_bytecode) = fetcher.get_bytecode(weth).await {
-                let calldata = vec![0xd0, 0xe3, 0x0d, 0xb0]; 
-                let value = U256::from(10u128.pow(17)); 
-                
-                // REALITY 1: The Honest Baseline (Normal Price)
-                let honest_db = forker.fork_and_wrap_chaos(weth, fake_caller, U256::from(1), U256::from(1000)).await?;
-                let honest_state = ExecutorAgent::execute(honest_db, fake_caller, weth, calldata.clone(), value);
-                
-                // REALITY 2: The Chaotic Shadow (Price Manipulated by 50%)
-                let chaos_db = forker.fork_and_wrap_chaos(weth, fake_caller, U256::from(1), U256::from(1500)).await?;
-                let chaotic_state = ExecutorAgent::execute(chaos_db, fake_caller, weth, calldata.clone(), value);
-                
-                // THE DEPTH CHECK: Diff the two realities
-                let report = DivergenceEngine::diff_states(&honest_state, &chaotic_state);
-                
-                if !report.divergent_slots.is_empty() {
-                    tracing::error!(
-                        target: "dss",
-                        total_dust = %report.total_dust_wei,
-                        slots_affected = report.divergent_slots.len(),
-                        ">> UNFINDABLE BUG DETECTED! Storage state diverged based on price manipulation!"
-                    );
-                } else {
-                    tracing::info!(">> Clean. No mathematical dependency on oracle found.");
-                }
+            // THE MALICIOUS TARGET: Reads Slot 1, multiplies by 2, saves to Slot 0
+            let malicious_hex: Vec<u8> = vec![0x60, 0x01, 0x54, 0x60, 0x02, 0x02, 0x60, 0x00, 0x55, 0x00];
+            
+            // BYPASS FORKER: Manually inject raw hex into memory
+            let mut honest_db = CacheDB::new(EmptyDB::new());
+            honest_db.insert_account_info(target, AccountInfo { balance: U256::ZERO, nonce: 1, code: Some(Bytecode::new_raw(malicious_hex.clone().into())), code_hash: B256::ZERO });
+            honest_db.insert_account_info(fake_caller, AccountInfo { balance: U256::from(10u128.pow(18)), nonce: 1, code: None, code_hash: B256::ZERO });
+            let honest_state = ExecutorAgent::execute(ChaosDatabase { inner: honest_db, oracle_slot: U256::from(1), chaotic_price: U256::from(100) }, fake_caller, target, vec![], U256::ZERO);
+            
+            let mut chaos_db = CacheDB::new(EmptyDB::new());
+            chaos_db.insert_account_info(target, AccountInfo { balance: U256::ZERO, nonce: 1, code: Some(Bytecode::new_raw(malicious_hex.into())), code_hash: B256::ZERO });
+            chaos_db.insert_account_info(fake_caller, AccountInfo { balance: U256::from(10u128.pow(18)), nonce: 1, code: None, code_hash: B256::ZERO });
+            let chaotic_state = ExecutorAgent::execute(ChaosDatabase { inner: chaos_db, oracle_slot: U256::from(1), chaotic_price: U256::from(150) }, fake_caller, target, vec![], U256::ZERO);
+            
+            let report = DivergenceEngine::diff_states(&honest_state, &chaotic_state);
+            
+            if !report.divergent_slots.is_empty() {
+                tracing::error!(target: "dss", total_dust = %report.total_dust_wei, slots_affected = report.divergent_slots.len(), ">> UNFINDABLE BUG DETECTED! Storage state diverged based on price manipulation!");
+            } else {
+                tracing::info!(">> Clean.");
             }
 
             tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;

@@ -1,5 +1,5 @@
 use alloy_primitives::{Address, U256};
-use revm::{Database, EvmBuilder, primitives::{SpecId, TransactTo, BlockEnv}};
+use revm::{Database, EvmBuilder, primitives::{SpecId, TransactTo}};
 use crate::agents::cross_ghost_reentrancy::ChaosDatabase;
 use tracing::info;
 use std::collections::HashMap;
@@ -16,10 +16,6 @@ impl ExecutorAgent {
     ) -> HashMap<U256, U256> {
         info!(target: "executor", "Spinning up REVM CPU...");
 
-        let mut block_env = BlockEnv::default();
-        block_env.number = U256::from(100000);
-        block_env.timestamp = U256::from(1000000);
-        block_env.basefee = U256::from(1000000000);
 
         let mut evm = EvmBuilder::default()
             .with_spec_id(SpecId::CANCUN)
