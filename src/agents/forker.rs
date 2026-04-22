@@ -46,6 +46,6 @@ impl ForkerAgent {
 
         info!(target: "forker", "✅ State downloaded & Caller funded.");
 
-        Ok(ChaosDatabase { inner: db, oracle_slot, chaotic_price })
+        Ok(ChaosDatabase { inner: db, flip_mask: U256::ZERO })
     }
 }
