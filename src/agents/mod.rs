@@ -1,4 +1,3 @@
-// The Module Tree: This tells Rust exactly which agent files exist.
 pub mod discovery;
 pub mod fetcher;
 pub mod disassembler;
@@ -10,4 +9,5 @@ pub mod invariant_precision;
 pub mod poc_simulator;
 pub mod execution_agent;
 pub mod reporter;
-pub mod forker; // THE FIX: Register our new Alloy-REVM bridge
+pub mod forker;
+pub mod executor;
