@@ -27,7 +27,6 @@ pub struct Finding {
     
     // The Undeniable Proof Stack
     pub math_proof: String,        // The Wad/Ray breakdown
-    pub evm_trace: String,         // The revm-inspectors PC trace
     pub poc_calldata: Vec<u8>,     // Raw bytes to trigger the bug
     
     // Specific to PrecisionDust (Private Path)

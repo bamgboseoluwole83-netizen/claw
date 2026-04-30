@@ -1,37 +1,47 @@
-// UPGRADE: Force the entire binary to use mimalloc for a 15% speed boost
 use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-// UPGRADE: Initialize the elite tracing engine
 use tracing_subscriber::EnvFilter;
+use std::env;
 
 mod types;
 mod agents;
 mod config;
 mod controller;
-mod cache;
 mod utils;
 
 #[tokio::main]
-async fn main() {
-    // FIX: Set filter to "info" globally so NO targets are blocked
+async fn main() -> eyre::Result<()> {
+    // 1. Setup logging
     tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::new("info"))
+        .with_env_filter(EnvFilter::new("info,web3_destroyer=debug"))
         .init();
 
-    tracing::info!("🛑 WEB3-DESTROYER INITIALIZING...");
-    tracing::info!("⚙️  Mimalloc active. Tracing online. Booting low-level execution engine...");
+    // 2. Load environment variables
+    // For Base Live Hunt, set this to: https://base.org
+    let rpc_url = env::var("RPC_URL")
+        .unwrap_or_else(|_| "http://localhost:8545".to_string());
+    
+    // If you have a WebSocket URL (for real-time hunting)
+    let ws_url = env::var("WS_URL").ok();
 
-    let ctrl = match controller::Controller::new().await {
-        Ok(c) => c,
-        Err(e) => {
-            tracing::error!(error = %e, "FATAL: Failed to initialize Controller");
-            std::process::exit(1);
+    tracing::info!("🌪️ GHOST HUNTER INITIALIZING...");
+    tracing::info!("📡 Connection: {}", rpc_url);
+
+    let ctrl = controller::Controller::new(&rpc_url).await?;
+
+    if let Some(ws) = ws_url {
+        tracing::info!("🎧 Mode: WebSocket Live Stream (Base/Bera)");
+        // ctrl.run_websocket(&ws).await?; // You can implement this next
+    } else {
+        tracing::info!("🎯 Mode: Target Hunt (targets.json)");
+        // This runs the logic we just fixed (Proxy -> Source -> Scan)
+        if let Err(e) = ctrl.run_live("targets.json").await {
+            tracing::error!("❌ Hunt stopped: {:?}", e);
         }
-    };
-
-    if let Err(e) = ctrl.run().await {
-        tracing::error!(error = %e, "FATAL: Controller crashed");
     }
+
+    Ok(())
 }
+

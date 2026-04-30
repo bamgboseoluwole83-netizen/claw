@@ -1,0 +1,517 @@
+[
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-02-slingshot-findings",
+    "name": "2021-02-slingshot-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-03-elasticdao-findings",
+    "name": "2021-03-elasticdao-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-marginswap",
+    "name": "2021-04-marginswap"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-marginswap-findings",
+    "name": "2021-04-marginswap-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-maple",
+    "name": "2021-04-maple"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-maple-findings",
+    "name": "2021-04-maple-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-88mph",
+    "name": "2021-05-88mph"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-basedloans",
+    "name": "2021-04-basedloans"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-basedloans-findings",
+    "name": "2021-04-basedloans-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-vader",
+    "name": "2021-04-vader"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-vader-findings",
+    "name": "2021-04-vader-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-02-slingshot",
+    "name": "2021-02-slingshot"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-03-elasticdao",
+    "name": "2021-03-elasticdao"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-nftx",
+    "name": "2021-05-nftx"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-nftx-findings",
+    "name": "2021-05-nftx-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-meebits",
+    "name": "2021-04-meebits"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-04-meebits-findings",
+    "name": "2021-04-meebits-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-notional",
+    "name": "2021-08-notional"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-realitycards",
+    "name": "2021-06-realitycards"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-yield",
+    "name": "2021-05-yield"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-pooltogether",
+    "name": "2021-06-pooltogether"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-visorfinance",
+    "name": "2021-05-visorfinance"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-sherlock",
+    "name": "2021-07-sherlock"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-88mph-findings",
+    "name": "2021-05-88mph-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-visorfinance-findings",
+    "name": "2021-05-visorfinance-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-fairside-findings",
+    "name": "2021-05-fairside-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-gro",
+    "name": "2021-06-gro"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-floatcapital",
+    "name": "2021-08-floatcapital"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-05-yield-findings",
+    "name": "2021-05-yield-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-tracer",
+    "name": "2021-06-tracer"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-realitycards-findings",
+    "name": "2021-06-realitycards-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-pooltogether-findings",
+    "name": "2021-06-pooltogether-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-tracer-findings",
+    "name": "2021-06-tracer-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-06-gro-findings",
+    "name": "2021-06-gro-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-wildcredit",
+    "name": "2021-07-wildcredit"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-wildcredit-findings",
+    "name": "2021-07-wildcredit-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-spartan-findings",
+    "name": "2021-07-spartan-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-spartan",
+    "name": "2021-07-spartan"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-sherlock-findings",
+    "name": "2021-07-sherlock-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-connext",
+    "name": "2021-07-connext"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-connext-findings",
+    "name": "2021-07-connext-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-floatcapital-findings",
+    "name": "2021-08-floatcapital-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-notional-findings",
+    "name": "2021-08-notional-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-pooltogether",
+    "name": "2021-07-pooltogether"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-07-pooltogether-findings",
+    "name": "2021-07-pooltogether-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-yield-findings",
+    "name": "2021-08-yield-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-yield",
+    "name": "2021-08-yield"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-realitycards-findings",
+    "name": "2021-08-realitycards-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-realitycards",
+    "name": "2021-08-realitycards"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-gravitybridge",
+    "name": "2021-08-gravitybridge"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-08-gravitybridge-findings",
+    "name": "2021-08-gravitybridge-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-sushimiso",
+    "name": "2021-09-sushimiso"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-sushitrident",
+    "name": "2021-09-sushitrident"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-sushimiso-findings",
+    "name": "2021-09-sushimiso-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-sushitrident-findings",
+    "name": "2021-09-sushitrident-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-yaxis",
+    "name": "2021-09-yaxis"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-yaxis-findings",
+    "name": "2021-09-yaxis-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-bvecvx",
+    "name": "2021-09-bvecvx"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-bvecvx-findings",
+    "name": "2021-09-bvecvx-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-wildcredit-findings",
+    "name": "2021-09-wildcredit-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-wildcredit",
+    "name": "2021-09-wildcredit"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-pooltogether-findings",
+    "name": "2021-10-pooltogether-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-sushitrident-2",
+    "name": "2021-09-sushitrident-2"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-defiProtocol",
+    "name": "2021-09-defiProtocol"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-defiprotocol-findings",
+    "name": "2021-09-defiprotocol-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-sushitrident-2-findings",
+    "name": "2021-09-sushitrident-2-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-pooltogether",
+    "name": "2021-10-pooltogether"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-tempus-findings",
+    "name": "2021-10-tempus-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-tempus",
+    "name": "2021-10-tempus"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-ambire",
+    "name": "2021-10-ambire"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-ambire-findings",
+    "name": "2021-10-ambire-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-swivel",
+    "name": "2021-09-swivel"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-09-swivel-findings",
+    "name": "2021-09-swivel-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-tracer",
+    "name": "2021-10-tracer"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-tracer-findings",
+    "name": "2021-10-tracer-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-defiprotocol-findings",
+    "name": "2021-10-defiprotocol-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-defiprotocol",
+    "name": "2021-10-defiprotocol"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-tally",
+    "name": "2021-10-tally"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-tally-findings",
+    "name": "2021-10-tally-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-mochi",
+    "name": "2021-10-mochi"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-mochi-findings",
+    "name": "2021-10-mochi-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-covalent",
+    "name": "2021-10-covalent"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-covalent-findings",
+    "name": "2021-10-covalent-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-union",
+    "name": "2021-10-union"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-union-findings",
+    "name": "2021-10-union-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-badgerdao",
+    "name": "2021-10-badgerdao"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-badgerdao-findings",
+    "name": "2021-10-badgerdao-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-slingshot-findings",
+    "name": "2021-10-slingshot-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-10-slingshot",
+    "name": "2021-10-slingshot"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-overlay-findings",
+    "name": "2021-11-overlay-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-overlay",
+    "name": "2021-11-overlay"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-fairside-findings",
+    "name": "2021-11-fairside-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-bootfinance",
+    "name": "2021-11-bootfinance"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-vader-findings",
+    "name": "2021-11-vader-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-nested-findings",
+    "name": "2021-11-nested-findings"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/2021-11-vader",
+    "name": "2021-11-vader"
+  },
+  {
+    "platform": "cantina",
+    "repo_url": "https://github.com/cantinaxyz/clawdstrike-skill",
+    "name": "clawdstrike-skill"
+  },
+  {
+    "platform": "cantina",
+    "repo_url": "https://github.com/cantinaxyz/clawsight-plugin",
+    "name": "clawsight-plugin"
+  },
+  {
+    "platform": "cantina",
+    "repo_url": "https://github.com/cantinaxyz/clawsight-siem",
+    "name": "clawsight-siem"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/code423n4.com",
+    "name": "code423n4.com"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/code-contests",
+    "name": "code-contests"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/awardcalc",
+    "name": "awardcalc"
+  },
+  {
+    "platform": "code4rena",
+    "repo_url": "https://github.com/code-423n4/contracts",
+    "name": "contracts"
+  }
+]
