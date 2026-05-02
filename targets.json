@@ -1,7 +1,8 @@
 [
   {
-    "name": "Compound V3 (USDC)",
-    "lender": "0xcB85848e06385f09675276D366B5731778906669",
-    "oracle": "0x65c816077C272E0c19BD5e7380ee404c2515f778"
+    "name": "WETH Mainnet",
+    "lender": "0xC02aaA39b223FE8D0a0e5C4F27ead9083C756Cc2",
+    "oracle": "0xC02aaA39b223FE8D0a0e5C4F27ead9083C756Cc2",
+    "price_slot": 0
   }
 ]

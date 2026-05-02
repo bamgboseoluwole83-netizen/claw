@@ -1,13 +1,13 @@
 use alloy::providers::Provider;
+use crate::agents::fetcher::HttpProvider;
 use revm::db::{CacheDB, EmptyDB};
 use revm::primitives::{AccountInfo, Bytecode, U256 as RU256};
 use alloy_primitives::Address;
 use eyre::Result;
 use std::sync::Arc;
-use crate::agents::fetcher::HttpProvider;
 
 pub struct ForkerAgent {
-    provider: Arc<HttpProvider>,
+    pub provider: Arc<HttpProvider>,
 }
 
 impl ForkerAgent {
@@ -22,7 +22,10 @@ impl ForkerAgent {
         let mut real_bytecode = None;
         for _ in 0..5 {
             match self.provider.get_code_at(target).await {
-                Ok(code) => { real_bytecode = Some(code); break; }
+                Ok(code) => {
+                    real_bytecode = Some(code);
+                    break;
+                }
                 Err(e) => {
                     tracing::warn!(target: "forker", "RPC hiccup for {:?}: {}. Retrying...", target, e);
                     tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;

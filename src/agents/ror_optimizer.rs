@@ -2,10 +2,9 @@ use alloy_primitives::{Address, Bytes, U256};
 use alloy_sol_types::{sol, SolCall};
 use revm::Database;
 use revm::db::{CacheDB, EmptyDB};
-use revm::primitives::{AccountInfo, TransactTo, SpecId};
+use revm::primitives::{TransactTo, SpecId};
 use revm::Evm;
 use tracing::info;
-use crate::agents::heimdall_analyzer::ContractAnalysis;
 
 sol! {
     function borrow(uint256 amount, address pool) external;
@@ -22,26 +21,6 @@ pub fn mapping_slot(user: Address, base_slot: U256) -> U256 {
 /// Heimdall‑aware ROR detection.
 /// If analysis is provided, we look for a price variable in the storage layout
 /// and use its slot. Otherwise we fall back to slot 0.
-pub fn find_optimal_borrow_heimdall(
-    db: &mut CacheDB<EmptyDB>,
-    lender_addr: Address,
-    pool_addr: Address,
-    attacker: Address,
-    dirty_price: U256,
-    analysis: Option<&ContractAnalysis>,
-) -> (U256, Bytes) {
-    // Determine the price slot from heimdall analysis (or default 0)
-    let price_slot = analysis
-        .and_then(|a| {
-            a.storage_slots.iter()
-                .find(|(_, name)| name.contains("price") || name.contains("Price") || name.contains("virtualPrice"))
-                .map(|(slot_num, _)| U256::from(*slot_num))
-        })
-        .unwrap_or(U256::from(0));
-
-    info!("🧠 ROR using price slot: {}", price_slot);
-    find_optimal_borrow_core(db, lender_addr, pool_addr, attacker, dirty_price, price_slot)
-}
 
 /// Core ROR detection (unchanged from before, but accepts price_slot)
 pub fn find_optimal_borrow_core(

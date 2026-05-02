@@ -4,39 +4,34 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
-tempfile = "3"
-toml = "0.8"
-toml_edit = "0.21.1"
-alloy = { version = "0.3", features = ["providers", "transports", "rpc-types", "reqwest-rustls-tls"] }
-alloy-primitives = { version = "0.8", features = ["serde"] }
-alloy-sol-types = "1.5.6"
-alloy-dyn-abi = "1.5.6"
-
+alloy = { version = "=0.3.6", features = ["providers", "transports", "rpc-types", "reqwest-rustls-tls"] }
+alloy-primitives = { version = "0.8.26", features = ["serde"] }
+alloy-sol-types = "0.8.26"
 revm = { version = "=14.0.3", features = ["std", "serde"] }
 tokio = { version = "1", features = ["full"] }
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
-
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 eyre = "0.6"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-
+hex = "0.4"
+proptest = "1.4"
+rand = "0.8"
+tempfile = "3"
+reqwest = { version = "0.12", features = ["json"] }
 num-bigint = "0.4"
 num-integer = "0.1"
 num-traits = "0.2"
-
 mimalloc = { version = "0.1", default-features = false }
-hex = "0.4"
-reqwest = { version = "0.13.3", features = ["json"] }
-solang-parser = "0.3.5"
-once_cell = "1.19"
-alloy-serde = "0.8"
-proptest = "1.4"
-
-
-
-[profile.release]
-codegen-units = 1
-strip = true
-opt-level = 3
-lto = true
+proc-macro2 = "=1.0.92"
+quote = "=1.0.38"
+toml_parser = "=1.0.0"
+evmole = "0.8.4"
+c-kzg = "=1.0.3"
+# ... your existing ones ...
+# ---- New for A1-class agent ----
+svm-rs = "0.5"                # Pure-Rust Solidity version manager
+lutetia = "0.2"               # Fast EVM decompiler (Rust-native)
+serde_yaml = "0.9"            # For Heimdall / Panoramix YAML output
+futures = "0.3"               # Stream concurrency for hypothesis testing
+rsevmasm = "0.5"

@@ -2,6 +2,7 @@ use alloy_primitives::{Address, U256};
 use tracing::info;
 
 /// Represents a discovered price oracle.
+#[derive(Debug, Clone)]
 pub struct OracleInfo {
     /// The address of the oracle contract (if STATICCALL is used).
     pub oracle_address: Option<Address>,
