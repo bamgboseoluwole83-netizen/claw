@@ -100,6 +100,108 @@ impl Orchestrator {
         })
     }
 
+    /// Create fully autonomous orchestrator with LIVE FORK HIJACK + LIVE AMMO capabilities
+    pub async fn with_full_autonomy(rpc_url: &str, etherscan_key: Option<String>) -> eyre::Result<Self> {
+        let dominator = AutonomousEconomicDominator::new_autonomous(rpc_url).await?;
+        let provider = Arc::new(
+            alloy::providers::ProviderBuilder::new()
+                .on_http(rpc_url.parse()?)
+        );
+        Ok(Self {
+            fetcher: Arc::new(Fetcher::new(provider.clone())),
+            forker: ForkerAgent::new(provider),
+            source_fetcher: SourceFetcher::new(etherscan_key),
+            concurrency: 4,
+            economic_dominator: Some(dominator),
+            enable_economic_analysis: true,
+        })
+    }
+
+    /// PRIMARY ANALYSIS METHOD - Uses enhanced AutonomousEconomicDominator
+    /// Combines old system's hunting with new economic analysis
+    pub async fn analyze_contract_autonomous(
+        &mut self,
+        address: Address,
+        name: &str,
+    ) -> Vec<ValidatedExploit> {
+        info!("🚀 Starting AUTONOMOUS analysis of {} ({})", name, address);
+
+        let mut all_exploits = Vec::new();
+
+        // Step 1: Fetch bytecode from live chain
+        let bytecode = match self.fetcher.get_code(address).await {
+            Ok(code) => {
+                info!("📥 Fetched {} bytes of bytecode", code.len());
+                code.to_vec()
+            }
+            Err(e) => {
+                warn!("Failed to fetch bytecode: {}", e);
+                return vec![];
+            }
+        };
+
+        // Step 2: If economic analysis enabled, run deep analysis
+        if self.enable_economic_analysis {
+            if let Some(dominator) = &mut self.economic_dominator {
+                // Use the enhanced autonomous system
+                let economic_exploits = dominator.fetch_and_analyze(address).await;
+                
+                // Convert to ValidatedExploit format
+                for exploit in economic_exploits {
+                    let severity = match exploit.severity {
+                        crate::agents::autonomous_economic_dominator::VulnerabilitySeverity::Critical => Severity::Critical,
+                        crate::agents::autonomous_economic_dominator::VulnerabilitySeverity::High => Severity::High,
+                        crate::agents::autonomous_economic_dominator::VulnerabilitySeverity::Medium => Severity::Medium,
+                        crate::agents::autonomous_economic_dominator::VulnerabilitySeverity::Low => Severity::Low,
+                    };
+
+                    let confidence = if exploit.confidence > 0.9 {
+                        Confidence::Proven
+                    } else if exploit.confidence > 0.7 {
+                        Confidence::High
+                    } else if exploit.confidence > 0.5 {
+                        Confidence::Medium
+                    } else {
+                        Confidence::Low
+                    };
+
+                    let attacker = Address::repeat_byte(0xde);
+                    let revenue = RevenueReport {
+                        attack: exploit.vulnerability_type.clone(),
+                        attacker,
+                        target: exploit.target,
+                        eth_gained: exploit.profit_estimate,
+                        tokens_gained: vec![],
+                        gas_cost_wei: U256::from(200_000),
+                        net_profit_wei: exploit.profit_estimate,
+                        viability: exploit.confidence as f64,
+                    };
+
+                    all_exploits.push(ValidatedExploit {
+                        target: exploit.target,
+                        vuln_class: exploit.vulnerability_type,
+                        calldata: alloy_primitives::Bytes::new(),
+                        profit: exploit.profit_estimate,
+                        amount: exploit.profit_estimate,
+                        revenue,
+                        severity,
+                        confidence,
+                        description: exploit.description,
+                    });
+                }
+
+                info!("🔍 Found {} economic exploits", all_exploits.len());
+            }
+        }
+
+        // Step 3: Also run traditional hypothesis-based analysis
+        let traditional_exploits = self.analyze_contract(address, name).await;
+        all_exploits.extend(traditional_exploits);
+
+        info!("🎯 Total exploits found: {}", all_exploits.len());
+        all_exploits
+    }
+
     #[instrument(skip(self), fields(target = %address))]
     pub async fn analyze_contract(
         &self,
