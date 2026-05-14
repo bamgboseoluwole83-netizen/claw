@@ -8,6 +8,7 @@ pub mod wake;
 pub mod chain;
 pub mod tool_status;
 pub mod economic;
+pub mod local_executor;
 pub mod poc_generator;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

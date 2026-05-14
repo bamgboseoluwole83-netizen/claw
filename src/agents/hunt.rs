@@ -79,6 +79,7 @@ pub fn check_tools_available() -> ToolReport {
         ("cast", "cast"),
         ("forge", "forge"),
         ("Aderyn", "aderyn"),
+        ("Echidna", "echidna"),
     ];
 
     for (display_name, binary_name) in tools {
@@ -981,8 +982,14 @@ pub async fn verify_findings(findings: &[Finding], rpc_url: &str, _block_number:
     };
 
     // Filter: Only verify findings above threshold
+    // Skip Heimdall/Aderyn — they are opcode-level/static, not executable exploits
     let exploit_findings: Vec<&Finding> = findings.iter()
-        .filter(|f| f.calldata.is_some() && f.score() >= min_score)
+        .filter(|f| {
+            f.calldata.is_some()
+            && f.score() >= min_score
+            && f.tool != ToolKind::Heimdall
+            && f.tool != ToolKind::Aderyn
+        })
         .collect();
 
     info!("   Verifying {} finding(s) on-chain (score >= {})...", exploit_findings.len(), min_score);
