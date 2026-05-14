@@ -1,37 +1,58 @@
 [package]
 name = "web3-destroyer"
-version = "0.3.0"
+version = "0.5.0"
 edition = "2021"
 
 [dependencies]
-alloy = { version = "=0.3.6", features = ["providers", "transports", "rpc-types", "reqwest-rustls-tls"] }
-alloy-primitives = { version = "0.8.26", features = ["serde"] }
-alloy-sol-types = "0.8.26"
-revm = { version = "=14.0.3", features = ["std", "serde"] }
+# Core EVM and blockchain
+revm = { version = "29", features = ["std", "serde"] }
+foundry-fork-db = "0.18"
+
+# Alloy ecosystem - modern Ethereum stack
+alloy = { version = "1.8", features = ["full", "rpc-types-trace", "providers"] }
+alloy-primitives = "1.5"
+alloy-sol-types = "1.5"
+alloy-dyn-abi = "1.5"
+alloy-provider = "1.8"
+alloy-rpc-types = "1.8"
+alloy-rpc-types-trace = "1.8"
+alloy-json-abi = "1.5"
+
+# Bytecode analysis (Heimdall as CLI subprocess + lightweight libs)
+evm-disassembler = "0.6"
+
+# Core runtime
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 eyre = "0.6"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_yaml = "0.9"
 hex = "0.4"
-proptest = "1.4"
-rand = "0.8"
+hex-literal = "0.3"
+rand = "0.9"
 tempfile = "3"
 reqwest = { version = "0.12", features = ["json"] }
+futures = "0.3"
+hashbrown = "0.14"
+
+# Math and analysis
 num-bigint = "0.4"
 num-integer = "0.1"
 num-traits = "0.2"
+petgraph = "0.6"
+priority-queue = "2.7"
+
+# Utilities
+clap = { version = "4", features = ["derive"] }
 mimalloc = { version = "0.1", default-features = false }
-proc-macro2 = "=1.0.92"
-quote = "=1.0.38"
-toml_parser = "=1.0.0"
-evmole = "0.8.4"
-c-kzg = "=1.0.3"
-# ... your existing ones ...
-# ---- New for A1-class agent ----
-svm-rs = "0.5"                # Pure-Rust Solidity version manager
-lutetia = "0.2"               # Fast EVM decompiler (Rust-native)
-serde_yaml = "0.9"            # For Heimdall / Panoramix YAML output
-futures = "0.3"               # Stream concurrency for hypothesis testing
-rsevmasm = "0.5"
+proptest = "1.4"
+which = "6"
+
+# Fuzzing
+libafl = { version = "0.15.4", features = ["prelude", "std"] }
+
+# Solidity version management
+svm-rs = "0.5"
+lutetia = "0.2"
