@@ -15,6 +15,7 @@ pub enum ToolKind {
     Mythril,
     Ityfuzz,
     Economic,
+    Aderyn,
 }
 
 impl fmt::Display for ToolKind {
@@ -31,6 +32,7 @@ impl fmt::Display for ToolKind {
             ToolKind::Mythril => write!(f, "Mythril"),
             ToolKind::Ityfuzz => write!(f, "Ityfuzz"),
             ToolKind::Economic => write!(f, "Economic"),
+            ToolKind::Aderyn => write!(f, "Aderyn"),
         }
     }
 }

@@ -26,12 +26,23 @@ fn find_venv_python3() -> Option<String> {
 }
 
 fn find_tool(names: &[&str]) -> Option<String> {
-    for name in names {
-        let venv = format!("/home/user/web3-destroyer/.venv/bin/{}", name);
-        if std::path::Path::new(&venv).exists() {
-            return Some(venv);
+    // Search common directories for pre-installed tools
+    let dirs = [
+        format!("/home/user/.local/bin"),
+        format!("/home/user/.bifrost/bin"),
+        format!("/home/user/.cargo/bin"),
+        format!("/home/user/web3-destroyer/.venv/bin"),
+    ];
+
+    for dir in &dirs {
+        for name in names {
+            let path = format!("{}/{}", dir, name);
+            if std::path::Path::new(&path).exists() {
+                return Some(path);
+            }
         }
     }
+
     for name in names {
         if let Ok(path) = std::process::Command::new("which").arg(name).output() {
             if path.status.success() {
@@ -67,6 +78,7 @@ pub fn check_tools_available() -> ToolReport {
         ("Ityfuzz", "ityfuzz"),
         ("cast", "cast"),
         ("forge", "forge"),
+        ("Aderyn", "aderyn"),
     ];
 
     for (display_name, binary_name) in tools {
@@ -93,7 +105,13 @@ pub async fn run_slither(source_dir: &Path) -> Vec<Finding> {
     info!("   Slither: analyzing {}...", source_dir.display());
 
     let mut cmd = tokio::process::Command::new(&slither);
-    cmd.arg(source_dir).arg("--json").arg("-");
+    cmd.arg(source_dir)
+        .arg("--json")
+        .arg("-")
+        .arg("--detect")
+        .arg("oracle-twap,rounding-direction,flash-reentrancy")
+        .arg("--detectors-path")
+        .arg("/home/user/web3-destroyer/detectors");
     let venv_bin = "/home/user/web3-destroyer/.venv/bin";
     let path = std::env::var("PATH").unwrap_or_default();
     cmd.env("PATH", if !path.contains(venv_bin) { format!("{}:{}", venv_bin, path) } else { path });
@@ -725,6 +743,81 @@ pub async fn run_heimdall(bytecode: &[u8], target: Address) -> Vec<Finding> {
 }
 
 // ================================================================
+// Aderyn
+// ================================================================
+
+pub async fn run_aderyn(source_dir: &Path) -> Vec<Finding> {
+    let mut findings = Vec::new();
+    if !find_tool(&["aderyn"]).is_some() {
+        return findings;
+    }
+
+    let output = match tokio::time::timeout(
+        std::time::Duration::from_secs(60),
+        tokio::process::Command::new("aderyn")
+            .arg(source_dir)
+            .arg("--output-format")
+            .arg("json")
+            .output()
+    ).await {
+        Ok(Ok(o)) => o,
+        _ => return findings,
+    };
+
+    if !output.status.success() {
+        return findings;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let parsed: serde_json::Value = match serde_json::from_str(&stdout) {
+        Ok(v) => v,
+        _ => {
+            // Try to parse from the file aderyn writes
+            let report_path = source_dir.join("report.json");
+            match std::fs::read_to_string(&report_path) {
+                Ok(s) => serde_json::from_str(&s).unwrap_or(serde_json::Value::Null),
+                _ => return findings,
+            }
+        }
+    };
+
+    let issues = parsed["issues"].as_array()
+        .or_else(|| parsed["findings"].as_array())
+        .cloned()
+        .unwrap_or_default();
+
+    for issue in issues {
+        let check = issue["check"].as_str().unwrap_or("unknown");
+        let description = issue["description"].as_str()
+            .or_else(|| issue["message"].as_str())
+            .unwrap_or("No description");
+        let severity_str = issue["severity"].as_str().unwrap_or("medium").to_lowercase();
+        let file = issue["file"].as_str().unwrap_or("");
+        let line = issue["line"].as_u64().unwrap_or(0);
+
+        let severity = match severity_str.as_str() {
+            "critical" | "high" => 9.0,
+            "medium" => 6.0,
+            "low" => 3.0,
+            "gas" | "info" => 1.0,
+            _ => 5.0,
+        };
+
+        findings.push(Finding {
+            tool: ToolKind::Aderyn,
+            severity,
+            confidence: 0.75,
+            description: format!("[{}] {} at {}:{} — {}", check, severity_str, file, line, description),
+            target: Address::ZERO,
+            calldata: None,
+            evidence: vec![],
+        });
+    }
+
+    findings
+}
+
+// ================================================================
 // Orchestrator
 // ================================================================
 
@@ -759,20 +852,23 @@ pub async fn orchestrate(
     info!("   Heimdall: {} finding(s)", heimdall_findings.len());
 
     if let Some(src) = source_dir {
-        let (slither_findings, conkas_findings, wake_findings, mythril_findings) = tokio::join!(
+        let (slither_findings, conkas_findings, wake_findings, mythril_findings, aderyn_findings) = tokio::join!(
             run_slither(src),
             run_conkas(project_root, src),
             wake::run_wake(src),
             run_mythril(src),
+            run_aderyn(src),
         );
         info!("   Slither: {} finding(s)", slither_findings.len());
         info!("   Conkas: {} finding(s)", conkas_findings.len());
         info!("   Wake: {} finding(s)", wake_findings.len());
         info!("   Mythril: {} finding(s)", mythril_findings.len());
+        info!("   Aderyn: {} finding(s)", aderyn_findings.len());
         all.extend(slither_findings);
         all.extend(conkas_findings);
         all.extend(wake_findings);
         all.extend(mythril_findings);
+        all.extend(aderyn_findings);
     }
 
     all.extend(heimdall_findings);
