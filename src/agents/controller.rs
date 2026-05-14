@@ -5,6 +5,7 @@ use tracing::{info, warn};
 
 use crate::agents::economic::EconomicSimulator;
 use crate::agents::finding::{VerifiedFinding, VerifyStatus, deduplicate_findings};
+use crate::agents::notifier::NtfyNotifier;
 use crate::agents::hunt;
 use crate::agents::wake;
 use crate::agents::tool_status::{ToolReport, ToolState};
@@ -170,7 +171,27 @@ impl Controller {
 
         info!("");
         info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        info!(" Phase 3: Report Generation");
+        info!(" Phase 3: PoC Generation");
+        info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        let poc_dir = std::path::PathBuf::from("pocs");
+        std::fs::create_dir_all(&poc_dir).ok();
+        let mut poc_files = Vec::new();
+        let generator = crate::agents::poc_generator::PoCGenerator::new();
+        for (i, exploit) in self.verified_exploits.iter().enumerate() {
+            if exploit.status == VerifyStatus::Verified {
+                if let Ok(poc) = generator.generate_from_verified(exploit, &poc_dir, i + 1) {
+                    info!("   📄 Generated PoC: {}", poc.name);
+                    poc_files.push(poc);
+                }
+            }
+        }
+        if poc_files.is_empty() {
+            info!("   No PoC files generated (no verified exploits)");
+        }
+
+        info!("");
+        info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        info!(" Phase 4: Report Generation");
         info!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         self.write_poc_report(block_number);
 
@@ -185,6 +206,48 @@ impl Controller {
 
         info!("   {} verified ({} high, {} medium, {} profitable)",
             self.verified_exploits.len(), high_count, med_count, profit_count);
+
+        // Send ntfy notifications for verified exploits
+        if let Ok(topic) = std::env::var("NTFY_TOPIC") {
+            let notifier = NtfyNotifier::new(topic);
+            for exploit in &self.verified_exploits {
+                if exploit.status == VerifyStatus::Verified {
+                    let profit_eth = crate::agents::economic::u256_to_f64(exploit.profit_estimate) / 1e18;
+                    let poc_name = poc_files.iter()
+                        .find(|p| p.profit_eth() == profit_eth)
+                        .map(|p| format!("\nPoC: pocs/{}", p.name))
+                        .unwrap_or_default();
+                    let msg = format!(
+                        "Target: {:.8}\nProfit: {:.6} ETH\nSeverity: {}\nCalldata: 0x{}{}",
+                        hex::encode(exploit.target),
+                        profit_eth,
+                        exploit.severity,
+                        hex::encode(&exploit.calldata),
+                        poc_name,
+                    );
+                    notifier.send("💥 Exploit Confirmed + PoC Ready", &msg).await;
+                }
+            }
+            for finding in &self.all_findings {
+                let exploitable = finding.description.contains("DELEGATECALL")
+                    || finding.description.contains("SELFDESTRUCT")
+                    || finding.description.contains("oracle")
+                    || finding.description.contains("flash")
+                    || finding.description.contains("economic");
+                if exploitable {
+                    let msg = format!(
+                        "Tool: {:?}\nTarget: {:.8}\nDescription: {}",
+                        finding.tool,
+                        hex::encode(finding.target),
+                        finding.description,
+                    );
+                    notifier.send("🔍 Interesting Finding", &msg).await;
+                }
+            }
+            if self.verified_exploits.is_empty() && self.all_findings.is_empty() {
+                notifier.send("✅ Scan Complete — No Findings", "Clean scan, nothing exploitable detected.").await;
+            }
+        }
 
         // Print tool availability report
         info!("");
