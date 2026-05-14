@@ -10,6 +10,7 @@ pub mod tool_status;
 pub mod economic;
 pub mod local_executor;
 pub mod poc_generator;
+pub mod protocol;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum ScanMode {
