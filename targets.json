@@ -1,8 +1,7 @@
 [
   {
-    "name": "WETH Mainnet",
-    "lender": "0xC02aaA39b223FE8D0a0e5C4F27ead9083C756Cc2",
-    "oracle": "0xC02aaA39b223FE8D0a0e5C4F27ead9083C756Cc2",
-    "price_slot": 0
+    "name": "VulnerableLender", 
+    "lender": "0x7e5Ae5956695CaeE51a489d4454a2a3930dC42Ea",
+    "oracle": "0x0000000000000000000000000000000000000000"
   }
 ]

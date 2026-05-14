@@ -179,10 +179,20 @@ impl Controller {
         let generator = crate::agents::poc_generator::PoCGenerator::new();
         for (i, exploit) in self.verified_exploits.iter().enumerate() {
             if exploit.status == VerifyStatus::Verified {
-                if let Ok(poc) = generator.generate_from_verified(exploit, &poc_dir, i + 1) {
+                let poc = generator.generate_and_verify(exploit, &poc_dir, i + 1);
+                if let Some(ref result) = poc.test_result {
+                    if result.passed {
+                        info!("   ✅ PoC confirmed: {} — forge test PASSED", poc.name);
+                    } else {
+                        info!("   ❌ PoC failed: {} — forge test FAILED", poc.name);
+                        if !result.stderr.is_empty() {
+                            info!("      Error: {}", result.stderr.lines().next().unwrap_or(""));
+                        }
+                    }
+                } else {
                     info!("   📄 Generated PoC: {}", poc.name);
-                    poc_files.push(poc);
                 }
+                poc_files.push(poc);
             }
         }
         if poc_files.is_empty() {
@@ -213,19 +223,22 @@ impl Controller {
             for exploit in &self.verified_exploits {
                 if exploit.status == VerifyStatus::Verified {
                     let profit_eth = crate::agents::economic::u256_to_f64(exploit.profit_estimate) / 1e18;
-                    let poc_name = poc_files.iter()
-                        .find(|p| p.profit_eth() == profit_eth)
-                        .map(|p| format!("\nPoC: pocs/{}", p.name))
-                        .unwrap_or_default();
+                    let matched_poc = poc_files.iter().find(|p| p.profit_eth() == profit_eth);
+                    let poc_name = matched_poc.map(|p| format!("\nPoC: pocs/{}", p.name)).unwrap_or_default();
+                    let forge_status = matched_poc
+                        .and_then(|p| p.test_result.as_ref())
+                        .map(|r| if r.passed { "✅ Forge: PASS" } else { "❌ Forge: FAIL" })
+                        .unwrap_or("");
                     let msg = format!(
-                        "Target: {:.8}\nProfit: {:.6} ETH\nSeverity: {}\nCalldata: 0x{}{}",
+                        "Target: {:.8}\nProfit: {:.6} ETH\nSeverity: {}\nCalldata: 0x{}{}\n{}",
                         hex::encode(exploit.target),
                         profit_eth,
                         exploit.severity,
                         hex::encode(&exploit.calldata),
                         poc_name,
+                        forge_status,
                     );
-                    notifier.send("💥 Exploit Confirmed + PoC Ready", &msg).await;
+                    notifier.send("💥 Exploit Report", &msg).await;
                 }
             }
             for finding in &self.all_findings {

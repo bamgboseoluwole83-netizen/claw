@@ -31,7 +31,7 @@ impl NtfyNotifier {
         }
     }
 
-    /// Send the entire PoC Markdown as the message body.
+    #[allow(dead_code)]
     pub async fn send_poc(&self, profit: &str, report_path: &str) {
         let body = std::fs::read_to_string(report_path)
             .unwrap_or_else(|_| "PoC content unavailable.".to_string());

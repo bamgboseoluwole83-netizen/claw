@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::LazyLock;
 
 use alloy::primitives::{Address, U256};
 
@@ -6,6 +7,7 @@ use crate::agents::economic::{EconStep, EconomicFinding};
 use crate::agents::finding::VerifiedFinding;
 
 const POC_TEMPLATE: &str = include_str!("../../templates/PocTemplate.t.sol");
+static DOT: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from("."));
 
 pub struct PoCGenerator;
 
@@ -130,6 +132,7 @@ impl PoCGenerator {
             strategy: finding.strategy.clone(),
             profit_estimate: finding.profit_estimate,
             confidence: finding.confidence,
+            test_result: None,
         })
     }
 
@@ -202,7 +205,70 @@ contract {} is Test {{
             strategy: finding.description.clone(),
             profit_estimate: finding.profit_estimate,
             confidence: finding.severity / 10.0,
+            test_result: None,
         })
+    }
+
+    /// Generate PoC and run forge test against it
+    pub fn generate_and_verify(
+        &self,
+        finding: &VerifiedFinding,
+        out_dir: &PathBuf,
+        index: usize,
+    ) -> PoCFile {
+        let mut poc = self
+            .generate_from_verified(finding, out_dir, index)
+            .unwrap_or_else(|e| PoCFile {
+                name: format!("V{:02}_error", index),
+                path: out_dir.join(format!("V{:02}_error.txt", index)),
+                strategy: finding.description.clone(),
+                profit_estimate: finding.profit_estimate,
+                confidence: finding.severity / 10.0,
+                test_result: Some(TestResult {
+                    passed: false,
+                    stdout: String::new(),
+                    stderr: format!("Failed to write PoC file: {}", e),
+                }),
+            });
+
+        // Run forge test on the generated PoC
+        let result = self.run_forge_test(&poc);
+        poc.test_result = Some(result);
+        poc
+    }
+
+    /// Execute `forge test` on the PoC file and return the result
+    pub fn run_forge_test(&self, poc: &PoCFile) -> TestResult {
+        let parent = poc.path.parent().unwrap_or(&DOT);
+        let test_contract = poc.name.replace(".t.sol", "");
+
+        let output = match std::process::Command::new("forge")
+            .arg("test")
+            .arg("--match-contract")
+            .arg(&test_contract)
+            .arg("-vvv")
+            .current_dir(parent)
+            .output()
+        {
+            Ok(o) => o,
+            Err(e) => {
+                return TestResult {
+                    passed: false,
+                    stdout: String::new(),
+                    stderr: format!("Failed to run forge: {}", e),
+                };
+            }
+        };
+
+        let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+        let passed = output.status.success() && stdout.contains("[PASS]");
+
+        TestResult {
+            passed,
+            stdout,
+            stderr,
+        }
     }
 }
 
@@ -213,6 +279,14 @@ pub struct PoCFile {
     pub strategy: String,
     pub profit_estimate: U256,
     pub confidence: f64,
+    pub test_result: Option<TestResult>,
+}
+
+#[derive(Debug, Clone)]
+pub struct TestResult {
+    pub passed: bool,
+    pub stdout: String,
+    pub stderr: String,
 }
 
 impl PoCFile {

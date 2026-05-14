@@ -63,7 +63,7 @@ contract VulnerableLendingProtocol {
         return VulnerablePriceOracle(priceOracle).getPrice();
     }
     
-    function getHealthFactor(address user) external view returns (uint256) {
+    function getHealthFactor(address user) public view returns (uint256) {
         if (borrowed[user] == 0) return type(uint256).max;
         return collateral[user] * getPrice() * 100 / borrowed[user] / 1e8;
     }

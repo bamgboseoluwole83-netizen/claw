@@ -1,0 +1,57 @@
+{
+  "version": "1.0",
+  "description": "Exploit chain patterns for web3-destroyer",
+  "patterns": [
+    {
+      "name": "oracle_manipulation",
+      "description": "Deposit → oracle manipulation → borrow",
+      "required_selectors": ["d0e30db0", "f220dc04", "c5ebeaec"],
+      "keywords": ["oracle", "price", "setprice", "borrow"],
+      "profit_estimate": "5000000000000000000",
+      "severity": 9.0
+    },
+    {
+      "name": "delegatecall_selfdestruct",
+      "description": "Delegatecall proxy with selfdestruct",
+      "required_selectors": ["9b3b3918"],
+      "keywords": ["delegatecall", "selfdestruct", "proxy"],
+      "profit_estimate": "1000000000000000000",
+      "severity": 10.0
+    },
+    {
+      "name": "deposit_borrow_withdraw",
+      "description": "Deposit → borrow → withdraw all",
+      "required_selectors": ["d0e30db0", "c5ebeaec", "853828b6"],
+      "keywords": ["deposit", "borrow", "withdraw"],
+      "profit_estimate": "3000000000000000000",
+      "severity": 8.5
+    },
+    {
+      "name": "proxy_upgrade_takeover",
+      "description": "Proxy upgrade to malicious implementation",
+      "required_selectors": ["3659cfe6", "9b3b3918"],
+      "keywords": ["upgrade", "implementation", "proxy"],
+      "profit_estimate": "2000000000000000000",
+      "severity": 10.0
+    },
+    {
+      "name": "flashloan_arbitrage",
+      "description": "Flash loan with price manipulation",
+      "required_selectors": ["ab9c4b5d"],
+      "keywords": ["flashloan", "swap", "arbitrage"],
+      "profit_estimate": "10000000000000000000",
+      "severity": 7.0
+    }
+  ],
+  "selectors": {
+    "deposit": "0xd0e30db0",
+    "withdraw": "0x2e1a7d4d",
+    "withdrawAll": "0x853828b6",
+    "borrow": "0xc5ebeaec",
+    "setPrice": "0xf220dc04",
+    "selfdestruct": "0x9b3b3918",
+    "upgradeTo": "0x3659cfe6",
+    "transfer": "0xa9059cbb",
+    "flashLoan": "0xab9c4b5d"
+  }
+}
