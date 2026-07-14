@@ -2,3 +2,7 @@
 *.pem
 .env
 target/
+# Docker
+docker/context/
+# Work dir temp files
+work_dir/

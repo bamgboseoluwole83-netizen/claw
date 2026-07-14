@@ -1,4 +1,0 @@
-Contract: 0x5fbdb2315678afecb367f032d93f642f64180aa3
-Instruction Coverage: 617/769 (80.23%) 
-Branch Coverage: 31/42 (73.81%) 
---------------------------------

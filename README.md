@@ -1,66 +1,64 @@
-## Foundry
+# CRS — Code Research System
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Static analysis + formal verification pipeline for C/C++ vulnerability research.
 
-Foundry consists of:
+## Pipeline
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+```
+Target source → Weggli (AST patterns) → Semgrep (taint) → CodeQL (DB queries)
+               ↓
+         Joern (CPG) → CBMC/ESBMC (SMT proof) → Frama-C (abstract interpretation)
+               ↓
+         Finding confirmed + variant analysis
+```
 
-## Documentation
+## Tools
 
-https://book.getfoundry.sh/
+| Tool | Purpose | Install |
+|------|---------|---------|
+| Weggli | Google P0 — semantic AST pattern matching (5s across 30k pkgs) | `curl -L weggli-rs/weggli` |
+| Semgrep | Inter-procedural taint tracking without build (YAML rules) | `pip3 install --user semgrep` |
+| CodeQL | Deep relational DB queries (30min DB build) | `codeql CLI from GitHub` |
+| Joern | Code Property Graph — Scala-based graph traversals | Needs Java |
+| CBMC | Bounded model checking — SMT solver for array bounds | `cbmc from GitHub` |
+| ESBMC | SMT-based verification (fallback for CBMC) | `esbmc from GitHub` |
+| Frama-C | Abstract interpretation — mathematical value ranges | Needs OCaml |
+
+## Structure
+
+```
+rules/          — Analysis rules and queries
+  weggli/       —   AST pattern files
+  semgrep/      —   YAML taint rules
+  codeql/       —   QL queries
+  joern/        —   Scala CPG scripts
+harnesses/      — Formal verification harnesses
+  cbmc/         —   CBMC proof harnesses
+  frama-c/      —   Frama-C ACSL annotations
+targets/        — Downloaded target source trees
+findings/       — Confirmed and suspected bugs
+scripts/        — Pipeline orchestration
+  pipeline.sh   —   Full pipeline runner
+  variant_analysis.sh — Cross-target variant scanner
+  cbmc_verify.sh —   CBMC solver runner
+  setup.sh      —   Tool installer
+```
 
 ## Usage
 
-### Build
+```bash
+# Install tools (needs network)
+./scripts/setup.sh
 
-```shell
-$ forge build
+# Download target source
+./scripts/setup.sh targets
+
+# Run full pipeline
+./scripts/pipeline.sh libxml2
 ```
 
-### Test
+## Current findings
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- **libxml2 DTD content model heap corruption** — confirmed SIGSEGV in
+  `xmlRegEpxFromParse` when DTD OR-group exceeds ~400 alternatives.
+  See `findings/libxml2_dtd_crash.md`

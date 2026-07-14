@@ -1,0 +1,9 @@
+[target.x86_64-unknown-linux-gnu]
+linker = "rust-lld"
+
+[target.x86_64-unknown-linux-musl]
+linker = "rust-lld"
+
+[profile.dev]
+debug = 1
+incremental = true

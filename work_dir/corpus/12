@@ -1,4 +1,0 @@
-Reverted? false 
- Txn:
-[Sender] 0xe1A425f1AC34A8a441566f93c82dD730639c8510
-   └─[1] 0x5FbDB2315678afecb367f032d93F642f64180aa3.call{value: 4436.4807 ether}(0xd0e30db0)
