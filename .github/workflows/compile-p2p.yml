@@ -1,0 +1,35 @@
+name: Compile p2p_test (kona-net)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'p2p_test/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rust-src, llvm-tools
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            p2p_test/target/
+            ~/.cargo/registry/
+          key: p2p-test-${{ hashFiles('p2p_test/Cargo.lock') }}
+
+      - name: Build
+        working-directory: p2p_test
+        run: cargo build --release 2>&1
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: p2p_test-binary
+          path: p2p_test/target/release/p2p_test
