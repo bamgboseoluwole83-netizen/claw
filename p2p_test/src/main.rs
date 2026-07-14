@@ -4,6 +4,11 @@ use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_target(true)
+        .init();
+
     println!("=== P2P Test: Joining Base P2P network (kona-net) ===");
 
     let signer = alloy_primitives::address!("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
@@ -77,7 +82,7 @@ async fn main() {
                         break;
                     }
                     Err(_) => {
-                        println!("[timeout] No block received in 120s (this is normal — Base produces blocks every 2s)");
+                        println!("[timeout] No block received in 120s");
                     }
                 }
             }

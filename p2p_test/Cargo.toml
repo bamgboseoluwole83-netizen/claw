@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 kona-net = "0.1"
 tokio = { version = "1", features = ["full"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # Pin alloy-primitives to 0.8.25 (0.8.26 has getrandom 0.3 bug)
 alloy-primitives = "=0.8.25"
