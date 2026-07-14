@@ -1,6 +1,22 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::io::{Read, Write};
+use std::net::TcpStream;
 use kona_net::driver::NetworkDriver;
 use tokio::sync::mpsc;
+use discv5::ListenConfig;
+use libp2p::{Multiaddr, multiaddr::Protocol};
+
+fn get_public_ip() -> Option<Ipv4Addr> {
+    let mut stream = TcpStream::connect("api.ipify.org:80").ok()?;
+    stream.set_read_timeout(Some(std::time::Duration::from_secs(5))).ok()?;
+    stream.set_write_timeout(Some(std::time::Duration::from_secs(5))).ok()?;
+    let request = b"GET / HTTP/1.0\r\nHost: api.ipify.org\r\nConnection: close\r\n\r\n";
+    stream.write_all(request).ok()?;
+    let mut response = String::new();
+    stream.read_to_string(&mut response).ok()?;
+    let ip = response.lines().last()?.trim().to_string();
+    ip.parse().ok()
+}
 
 #[tokio::main]
 async fn main() {
@@ -18,10 +34,25 @@ async fn main() {
     println!("Signer: {signer}");
     println!("Socket: {socket}");
 
+    // Detect our public IP so we can advertise it on the libp2p swarm
+    let public_ip = get_public_ip();
+    match public_ip {
+        Some(ip) => println!("Detected public IP: {ip}"),
+        None => println!("Could not detect public IP (will rely on discv5 ENR auto-update)"),
+    }
+
+    // Custom discv5 config: faster ENR IP update, no expiry from missing incoming connections
+    let listen_config = ListenConfig::from_ip(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), 9222);
+    let discv5_config = discv5::ConfigBuilder::new(listen_config)
+        .enr_peer_update_min(2)
+        .auto_nat_listen_duration(None)
+        .build();
+
     let mut driver = match NetworkDriver::builder()
         .with_chain_id(8453u64)
         .with_unsafe_block_signer(signer)
         .with_gossip_addr(socket)
+        .with_discovery_config(discv5_config)
         .build()
     {
         Ok(d) => {
@@ -33,6 +64,17 @@ async fn main() {
             return;
         }
     };
+
+    // Add our public IP as an external address on the libp2p swarm.
+    // This ensures the identify protocol advertises the correct source IP,
+    // preventing remote peers from dropping our connection due to IP mismatch.
+    if let Some(ip) = public_ip {
+        let mut addr = Multiaddr::empty();
+        addr.push(Protocol::Ip4(ip));
+        addr.push(Protocol::Tcp(9222));
+        let _ = driver.gossip.swarm.add_external_address(addr);
+        println!("Added external address to swarm: {ip}:9222");
+    }
 
     let block_recv = driver.take_unsafe_block_recv();
 
