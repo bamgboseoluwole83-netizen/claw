@@ -3,8 +3,6 @@ name: Compile p2p_test (kona-net)
 on:
   workflow_dispatch:
   push:
-    paths:
-      - 'p2p_test/**'
 
 jobs:
   build:
