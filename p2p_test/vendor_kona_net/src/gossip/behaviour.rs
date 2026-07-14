@@ -71,7 +71,7 @@ impl Behaviour {
             })
             .collect::<Result<Vec<bool>, BehaviourError>>()?;
 
-        Ok(Self { ping, gossipsub })
+        Ok(Self { ping, gossipsub, identify })
     }
 }
 

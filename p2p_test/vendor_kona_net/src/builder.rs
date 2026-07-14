@@ -276,13 +276,14 @@ impl NetworkDriverBuilder {
         let (unsafe_block_signer_sender, unsafe_block_signer_recv) = channel(unsafe_block_signer);
         let (handler, unsafe_block_recv) = BlockHandler::new(chain_id, unsafe_block_signer_recv);
 
-        // Construct the gossipsub behaviour.
-        let behaviour = Behaviour::new(config, &[Box::new(handler.clone())], &keypair)?;
-
         // Build the swarm.
         let timeout = self.timeout.take().unwrap_or(Duration::from_secs(60));
         let noise_config = self.noise_config.take();
         let keypair = self.keypair.take().unwrap_or(Keypair::generate_secp256k1());
+
+        // Construct the gossipsub behaviour (needs keypair for identify protocol).
+        let behaviour = Behaviour::new(config, &[Box::new(handler.clone())], &keypair)?;
+
         let swarm = SwarmBuilder::with_existing_identity(keypair)
             .with_tokio()
             .with_tcp(
