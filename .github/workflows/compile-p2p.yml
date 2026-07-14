@@ -10,9 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly-2025-02-01
+      - uses: dtolnay/rust-toolchain@nightly
 
       - name: Build
         working-directory: p2p_test

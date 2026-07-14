@@ -1,5 +1,6 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use kona_net::driver::NetworkDriver;
+use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() {
@@ -28,11 +29,10 @@ async fn main() {
         }
     };
 
-    // Take the unsafe block receiver channel before starting
     let block_recv = driver.take_unsafe_block_recv();
 
     println!("Starting NetworkDriver...");
-    match driver.start().await {
+    match driver.start() {
         Ok(()) => println!("NetworkDriver started! Listening for gossip events..."),
         Err(e) => {
             eprintln!("Failed to start NetworkDriver: {e:?}");
@@ -40,15 +40,27 @@ async fn main() {
         }
     }
 
-    // Receive blocks from the gossipsub channel
     match block_recv {
-        Some(mut rx) => {
+        Some(rx) => {
             println!("\n=== Block receiver active! Waiting for blocks... ===\n");
+            let (tx, mut async_rx) = mpsc::unbounded_channel();
+            tokio::task::spawn_blocking(move || {
+                loop {
+                    match rx.recv() {
+                        Ok(block) => {
+                            if tx.send(block).is_err() {
+                                break;
+                            }
+                        }
+                        Err(_) => break,
+                    }
+                }
+            });
             let mut count = 0u64;
             loop {
                 match tokio::time::timeout(
                     std::time::Duration::from_secs(120),
-                    rx.recv(),
+                    async_rx.recv(),
                 )
                 .await
                 {
