@@ -10,15 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@nightly
-
-      - name: Cache cargo
-        uses: actions/cache@v4
+      - uses: dtolnay/rust-toolchain@master
         with:
-          path: |
-            p2p_test/target/
-            ~/.cargo/registry/
-          key: p2p-test-${{ hashFiles('p2p_test/Cargo.lock') }}
+          toolchain: nightly-2025-02-01
 
       - name: Build
         working-directory: p2p_test
